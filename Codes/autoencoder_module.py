@@ -176,16 +176,12 @@ class AutoEncoder:
         plt.ylabel('True positive rate')
         plt.savefig(save_name + 'ROC_curve.png')
 
-    def evaluate_count_matrix(self, x_test, y_test, threshold):
-        predictions = np.zeros(len(x_test))
+    def evaluate_count_matrix(self, x_test, y_test, threshold, difference_calculating_function):
+        errors = np.zeros(len(x_test))
         for i in range(len(x_test)):
-            errors = self.predict(x_test[i])
-            if max(errors) > threshold:
-                predictions[i] = 1
-        cm = confusion_matrix(y_test, predictions)
-        ConfusionMatrixDisplay(confusion_matrix=cm).plot()
-        plt.title("Confusion Matrix")
-        plt.show()
-
+            predicted_vectors = self.model.predict(x_test[i])
+            difference_vector = difference_calculating_function(x_test[i], predicted_vectors)
+            errors[i] = max(difference_vector)
+        return errors
 
         
